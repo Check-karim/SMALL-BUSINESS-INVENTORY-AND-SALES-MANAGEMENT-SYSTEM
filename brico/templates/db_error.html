@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block pagetitle %}Database{% endblock %}
+{% block content %}
+<section class="page">
+  <p class="eyebrow">MySQL</p>
+  <h1>The counter cannot reach the database.</h1>
+  <p class="lede">Start MySQL, then refresh. On XAMPP the usual account is root with an empty password, database brico_nb, port 3306. Change those values in brico/config.py if your server is different.</p>
+  {% if message %}<p class="flash flash-error">{{ message }}</p>{% endif %}
+  <a class="btn btn-primary" href="{{ url_for('public.home') }}">Back to the homepage</a>
+</section>
+{% endblock %}

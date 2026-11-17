@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block pagetitle %}{{ sale.sale_no }}{% endblock %}
+{% block content %}
+<article class="receipt">
+  <header class="receipt-head">
+    <div>
+      <p class="eyebrow">Brico NB Ltd</p>
+      <h1>{{ sale.sale_no }}</h1>
+      <p>{{ sale.branch_name }} · {{ sale.branch_address }}</p>
+      <p>{{ sale.created_at|when }}</p>
+    </div>
+    <p class="receipt-pay">{{ payment_labels.get(sale.payment_method, sale.payment_method) }}</p>
+  </header>
+  <dl class="facts">
+    <div><dt>Customer</dt><dd>{{ sale.customer_name }}</dd></div>
+    <div><dt>Phone</dt><dd>{{ sale.customer_phone }}</dd></div>
+    <div><dt>Recorded by</dt><dd>{{ sale.staff_name }}</dd></div>
+    {% if sale.quote_no %}<div><dt>From quotation</dt><dd>{{ sale.quote_no }}</dd></div>{% endif %}
+  </dl>
+  <div class="table-wrap">
+    <table class="data">
+      <thead><tr><th>Product</th><th>Qty</th><th>Price</th><th>Line</th></tr></thead>
+      <tbody>
+        {% for item in items %}
+          <tr>
+            <td>{{ item.sku }} · {{ item.name }}</td>
+            <td>{{ item.quantity }}</td>
+            <td>{{ item.unit_price|money }}</td>
+            <td>{{ item.line_total|money }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+      <tfoot><tr><th colspan="3">Total</th><th>{{ sale.total|money }}</th></tr></tfoot>
+    </table>
+  </div>
+  <p class="hint">Stock at {{ sale.branch_name }} was reduced when this sale was saved. The receipt itself stays as recorded.</p>
+  <div class="form-actions no-print">
+    <button class="btn btn-ghost" type="button" data-print>Print receipt</button>
+    <a href="{{ url_for('commerce.sale_list') }}">Back to sales</a>
+  </div>
+</article>
+{% endblock %}

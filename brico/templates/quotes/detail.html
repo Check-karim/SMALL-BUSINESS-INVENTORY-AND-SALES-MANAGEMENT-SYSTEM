@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block pagetitle %}{{ quote.quote_no }}{% endblock %}
+{% block content %}
+<article class="receipt">
+  <header class="receipt-head">
+    <div>
+      <p class="eyebrow">Quotation</p>
+      <h1>{{ quote.quote_no }}</h1>
+      <p>{{ quote.branch_name }} · {{ quote.created_at|when }}</p>
+    </div>
+    <span class="badge badge-{{ quote.status }}">{{ status_labels.get(quote.status, quote.status) }}</span>
+  </header>
+  <dl class="facts">
+    <div><dt>Customer</dt><dd>{{ quote.customer_name }}</dd></div>
+    <div><dt>Email</dt><dd>{{ quote.customer_email }}</dd></div>
+    <div><dt>Phone</dt><dd>{{ quote.customer_phone }}</dd></div>
+    <div><dt>Prepared by</dt><dd>{{ quote.staff_name }}</dd></div>
+  </dl>
+  {% if quote.notes %}<p class="note">{{ quote.notes }}</p>{% endif %}
+  <div class="table-wrap">
+    <table class="data">
+      <thead><tr><th>Product</th><th>Qty</th><th>Price</th><th>Line</th></tr></thead>
+      <tbody>
+        {% for item in items %}
+          <tr>
+            <td>{{ item.sku }} · {{ item.name }}</td>
+            <td>{{ item.quantity }}</td>
+            <td>{{ item.unit_price|money }}</td>
+            <td>{{ item.line_total|money }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+      <tfoot><tr><th colspan="3">Total</th><th>{{ quote.total|money }}</th></tr></tfoot>
+    </table>
+  </div>
+  <div class="form-actions no-print">
+    <button class="btn btn-ghost" type="button" data-print>Print</button>
+    <a href="{{ url_for('commerce.quotation_list') }}">Back to quotations</a>
+  </div>
+</article>
+{% if quote.status not in ['converted', 'rejected'] %}
+  <section class="split no-print">
+    <form class="panel" method="post" action="{{ url_for('commerce.quotation_status', quote_id=quote.id) }}">
+      {% include "partials/csrf.html" %}
+      <h2>Update status</h2>
+      <label class="field">
+        <span>Status</span>
+        <select name="status">
+          {% if quote.status == 'draft' %}<option value="sent">Sent</option>{% endif %}
+          {% if quote.status in ['draft', 'sent'] %}<option value="accepted">Accepted</option>{% endif %}
+          <option value="rejected">Rejected</option>
+        </select>
+      </label>
+      <button class="btn btn-ghost" type="submit">Save status</button>
+    </form>
+    <form class="panel" method="post" action="{{ url_for('commerce.quotation_convert', quote_id=quote.id) }}">
+      {% include "partials/csrf.html" %}
+      <h2>Turn into a sale</h2>
+      <p class="hint">This sells the quoted lines at {{ quote.branch_name }} and reduces stock there.</p>
+      <label class="field">
+        <span>Payment</span>
+        <select name="payment_method">
+          {% for key, label in payment_methods %}
+            <option value="{{ key }}">{{ label }}</option>
+          {% endfor %}
+        </select>
+      </label>
+      <button class="btn btn-primary" type="submit">Complete sale</button>
+    </form>
+  </section>
+{% endif %}
+{% endblock %}

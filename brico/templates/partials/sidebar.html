@@ -1,0 +1,22 @@
+<aside class="sidebar">
+  <a class="brand brand-dark" href="{{ url_for('manage.dashboard_page') }}">
+    <span class="mark" aria-hidden="true">B</span>
+    <span class="brand-name">Brico NB <small>Counter</small></span>
+  </a>
+  <nav class="side-nav" aria-label="System">
+    {% for item in nav_items %}
+      <a href="{{ url_for(item.endpoint) }}" class="{{ 'is-active' if item.active }}" {% if item.active %}aria-current="page"{% endif %}>{{ item.label }}</a>
+    {% endfor %}
+  </nav>
+  <div class="side-user">
+    <p class="side-name">{{ me.full_name }}</p>
+    <p class="side-meta">{{ me.role|capitalize }} · {{ me.branch_name }}</p>
+    <div class="side-actions">
+      <a href="{{ url_for('auth.profile') }}">Profile</a>
+      <form method="post" action="{{ url_for('auth.logout') }}">
+        {% include "partials/csrf.html" %}
+        <button type="submit">Sign out</button>
+      </form>
+    </div>
+  </div>
+</aside>

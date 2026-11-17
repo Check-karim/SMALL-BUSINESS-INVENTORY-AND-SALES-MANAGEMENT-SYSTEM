@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block pagetitle %}Inventory{% endblock %}
+{% block content %}
+<header class="page-head">
+  <div>
+    <p class="eyebrow">Availability</p>
+    <h1>Inventory</h1>
+    <p class="lede">Quantities by branch. Sales staff can check the shelf before a quotation or a sale.</p>
+  </div>
+  {% if me.role == 'admin' %}
+    <div class="page-actions">
+      <a class="btn btn-primary" href="{{ url_for('catalog.receive') }}">Receive or adjust</a>
+      <a class="btn btn-ghost" href="{{ url_for('catalog.transfer') }}">Transfer</a>
+    </div>
+  {% endif %}
+</header>
+<form class="filters" method="get">
+  <input type="search" name="q" value="{{ search }}" placeholder="Search name or SKU" aria-label="Search inventory">
+  <select name="branch_id" aria-label="Branch">
+    <option value="">All branches</option>
+    {% for branch in branches %}
+      <option value="{{ branch.id }}" {% if branch_id == branch.id %}selected{% endif %}>{{ branch.name }}</option>
+    {% endfor %}
+  </select>
+  <label class="check"><input type="checkbox" name="low" value="1" {% if low_only %}checked{% endif %}> Low stock only</label>
+  <button class="btn btn-ghost" type="submit">Filter</button>
+</form>
+{% if rows %}
+  <div class="table-wrap">
+    <table class="data">
+      <thead>
+        <tr><th>SKU</th><th>Product</th><th>Branch</th><th>On hand</th><th>Reorder</th><th></th></tr>
+      </thead>
+      <tbody>
+        {% for row in rows %}
+          <tr class="{{ 'is-low' if row.quantity <= row.reorder_level }}">
+            <td>{{ row.sku }}</td>
+            <td>{{ row.name }}</td>
+            <td>{{ row.branch_name }}</td>
+            <td>{{ row.quantity }}</td>
+            <td>{{ row.reorder_level }}</td>
+            <td>{% if row.quantity <= row.reorder_level %}<span class="badge badge-draft">Low</span>{% else %}<span class="badge badge-accepted">OK</span>{% endif %}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% else %}
+  <p class="empty">No stock lines match that filter.</p>
+{% endif %}
+{% endblock %}

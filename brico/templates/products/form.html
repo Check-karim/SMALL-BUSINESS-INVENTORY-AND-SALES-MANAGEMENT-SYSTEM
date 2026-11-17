@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% block pagetitle %}{{ 'Edit product' if editing else 'Register product' }}{% endblock %}
+{% block content %}
+<header class="page-head">
+  <div>
+    <p class="eyebrow">Catalogue</p>
+    <h1>{{ 'Edit product' if editing else 'Register a product' }}</h1>
+  </div>
+</header>
+<form class="panel form-narrow" method="post">
+  {% include "partials/csrf.html" %}
+  {% if errors.form %}<p class="flash flash-error">{{ errors.form }}</p>{% endif %}
+  <div class="form-grid">
+    <label class="field">
+      <span>SKU</span>
+      <input name="sku" value="{{ data.sku }}" required maxlength="30" {% if errors.sku %}aria-invalid="true"{% endif %}>
+      <small class="hint">Letters, numbers, and hyphens. It cannot start with a special character.</small>
+      {% if errors.sku %}<strong class="field-error">{{ errors.sku }}</strong>{% endif %}
+    </label>
+    <label class="field">
+      <span>Name</span>
+      <input name="name" value="{{ data.name }}" required maxlength="120" {% if errors.name %}aria-invalid="true"{% endif %}>
+      {% if errors.name %}<strong class="field-error">{{ errors.name }}</strong>{% endif %}
+    </label>
+    <label class="field">
+      <span>Category</span>
+      <select name="category" {% if errors.category %}aria-invalid="true"{% endif %}>
+        {% for item in categories %}
+          <option value="{{ item }}" {% if data.category == item %}selected{% endif %}>{{ item }}</option>
+        {% endfor %}
+      </select>
+      {% if errors.category %}<strong class="field-error">{{ errors.category }}</strong>{% endif %}
+    </label>
+    <label class="field">
+      <span>Price</span>
+      <input name="unit_price" inputmode="decimal" value="{{ data.unit_price }}" required {% if errors.unit_price %}aria-invalid="true"{% endif %}>
+      {% if errors.unit_price %}<strong class="field-error">{{ errors.unit_price }}</strong>{% endif %}
+    </label>
+    <label class="field">
+      <span>Reorder level</span>
+      <input type="number" name="reorder_level" min="0" step="1" value="{{ data.reorder_level }}" required {% if errors.reorder_level %}aria-invalid="true"{% endif %}>
+      <small class="hint">A branch at or below this number shows as low.</small>
+      {% if errors.reorder_level %}<strong class="field-error">{{ errors.reorder_level }}</strong>{% endif %}
+    </label>
+  </div>
+  <label class="field">
+    <span>Description</span>
+    <textarea name="description" rows="3" maxlength="500">{{ data.description }}</textarea>
+    {% if errors.description %}<strong class="field-error">{{ errors.description }}</strong>{% endif %}
+  </label>
+  {% if not editing %}
+    <fieldset class="stock-set">
+      <legend>Opening stock</legend>
+      <div class="form-grid">
+        {% for branch in branches %}
+          <label class="field">
+            <span>{{ branch.name }}</span>
+            <input type="number" name="stock_{{ branch.id }}" min="0" step="1" value="{{ request.form.get('stock_' ~ branch.id, '0') }}">
+            {% if errors['stock_' ~ branch.id] %}<strong class="field-error">{{ errors['stock_' ~ branch.id] }}</strong>{% endif %}
+          </label>
+        {% endfor %}
+      </div>
+    </fieldset>
+  {% endif %}
+  <div class="form-actions">
+    <button class="btn btn-primary" type="submit">{{ 'Save changes' if editing else 'Save product' }}</button>
+    <a href="{{ url_for('catalog.product_list') }}">Cancel</a>
+  </div>
+</form>
+{% if editing %}
+  <form class="inline-form" method="post" action="{{ url_for('catalog.product_toggle', product_id=product_id) }}">
+    {% include "partials/csrf.html" %}
+    <button class="btn btn-danger" type="submit" data-confirm="{{ 'Restore this product?' if not is_active else 'Archive this product?' }}">
+      {{ 'Restore product' if not is_active else 'Archive product' }}
+    </button>
+  </form>
+{% endif %}
+{% endblock %}

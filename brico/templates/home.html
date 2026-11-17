@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+{% block pagetitle %}Home{% endblock %}
+{% block content %}
+<section class="hero">
+  <div class="hero-copy">
+    <p class="eyebrow">Brico NB Ltd</p>
+    <h1>Stock, quotes, and sales on one counter.</h1>
+    <p class="lede">The inventory and sales system for our yards. Administrators keep the catalogue and the stock honest. Sales staff check what is on the shelf, prepare quotations, and record the purchase. Completed sales update the quantities themselves.</p>
+    <div class="hero-actions">
+      <a class="btn btn-primary" href="{{ url_for('auth.login') }}">Staff sign in</a>
+      <a class="btn btn-ghost" href="{{ url_for('public.about') }}">About the company</a>
+    </div>
+  </div>
+  <aside class="ticket" aria-label="Yard snapshot">
+    <p class="ticket-kicker">Yard ticket</p>
+    <h2>What the counter can see</h2>
+    {% if stats %}
+      <dl>
+        <div><dt>Branches</dt><dd>{{ stats.branches }}</dd></div>
+        <div><dt>Active products</dt><dd>{{ stats.products }}</dd></div>
+        <div><dt>Lines at or below reorder</dt><dd>{{ stats.low }}</dd></div>
+      </dl>
+    {% else %}
+      <dl>
+        <div><dt>Catalogue</dt><dd>Shared</dd></div>
+        <div><dt>Stock</dt><dd>By branch</dd></div>
+        <div><dt>Sales</dt><dd>Posted live</dd></div>
+      </dl>
+    {% endif %}
+    <p class="ticket-foot">Every branch reads the same book.</p>
+  </aside>
+</section>
+
+<section class="band">
+  <div class="section-head">
+    <p class="eyebrow">The work</p>
+    <h2>One place for the yard.</h2>
+  </div>
+  <div class="grid-4">
+    <article class="card">
+      <p class="card-index">01</p>
+      <h3>Products</h3>
+      <p>Register what we sell, with a price, a SKU, and a reorder point.</p>
+    </article>
+    <article class="card">
+      <p class="card-index">02</p>
+      <h3>Inventory</h3>
+      <p>See each branch, receive deliveries, correct a count, or move stock across the yard.</p>
+    </article>
+    <article class="card">
+      <p class="card-index">03</p>
+      <h3>Quotations</h3>
+      <p>Price a job from the stock that is actually there, then turn the quote into a sale.</p>
+    </article>
+    <article class="card">
+      <p class="card-index">04</p>
+      <h3>Reports</h3>
+      <p>Read revenue, busy branches, and low stock before the next order is placed.</p>
+    </article>
+  </div>
+</section>
+
+<section class="band split-intro">
+  <div>
+    <p class="eyebrow">Who signs in</p>
+    <h2>Administrators and the sales counter.</h2>
+    <p>Administrators register products, manage inventory, watch stock movements, and generate reports. Sales staff check availability, write quotations, and record customer purchases.</p>
+  </div>
+  <div class="grid-2">
+    <article class="card card-ink">
+      <h3>Administrator</h3>
+      <p>The preloaded account opens the full counter: catalogue, stock, movements, branches, team, and reports.</p>
+    </article>
+    <article class="card">
+      <h3>Sales staff</h3>
+      <p>A new account chooses a home branch. Sales from that counter reduce that branch’s stock.</p>
+    </article>
+  </div>
+</section>
+
+{% if branches %}
+<section class="band">
+  <div class="section-head">
+    <p class="eyebrow">Branches</p>
+    <h2>The same catalogue, three counters.</h2>
+  </div>
+  <div class="grid-3">
+    {% for branch in branches %}
+      <article class="card">
+        <p class="card-index">{{ branch.code }}</p>
+        <h3>{{ branch.name }}</h3>
+        <p>{{ branch.address }}</p>
+        <p class="muted">{{ branch.phone }}</p>
+      </article>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+{% endblock %}

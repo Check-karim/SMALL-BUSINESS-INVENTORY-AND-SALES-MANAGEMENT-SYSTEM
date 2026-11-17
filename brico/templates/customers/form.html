@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block pagetitle %}{{ 'Edit customer' if editing else 'Add customer' }}{% endblock %}
+{% block content %}
+<header class="page-head">
+  <div>
+    <p class="eyebrow">People</p>
+    <h1>{{ 'Edit customer' if editing else 'Add a customer' }}</h1>
+  </div>
+</header>
+<form class="panel form-narrow" method="post" novalidate>
+  {% include "partials/csrf.html" %}
+  <div class="form-grid">
+    <label class="field">
+      <span>Full name</span>
+      <input name="full_name" value="{{ data.full_name }}" required maxlength="80" {% if errors.full_name %}aria-invalid="true"{% endif %}>
+      <small class="hint">Letters and spaces only.</small>
+      {% if errors.full_name %}<strong class="field-error">{{ errors.full_name }}</strong>{% endif %}
+    </label>
+    <label class="field">
+      <span>Email</span>
+      <input type="email" name="email" value="{{ data.email }}" required maxlength="120" {% if errors.email %}aria-invalid="true"{% endif %}>
+      {% if errors.email %}<strong class="field-error">{{ errors.email }}</strong>{% endif %}
+    </label>
+    <label class="field">
+      <span>Phone</span>
+      <input type="tel" name="phone" value="{{ data.phone }}" required maxlength="20" {% if errors.phone %}aria-invalid="true"{% endif %}>
+      <small class="hint">10 to 15 digits.</small>
+      {% if errors.phone %}<strong class="field-error">{{ errors.phone }}</strong>{% endif %}
+    </label>
+    <label class="field">
+      <span>Address</span>
+      <input name="address" value="{{ data.address }}" maxlength="160">
+      {% if errors.address %}<strong class="field-error">{{ errors.address }}</strong>{% endif %}
+    </label>
+  </div>
+  <div class="form-actions">
+    <button class="btn btn-primary" type="submit">Save customer</button>
+    <a href="{{ url_for('commerce.customer_list') }}">Cancel</a>
+  </div>
+</form>
+{% endblock %}

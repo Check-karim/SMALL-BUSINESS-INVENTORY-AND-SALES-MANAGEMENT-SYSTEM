@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block pagetitle %}About{% endblock %}
+{% block content %}
+<section class="page">
+  <p class="eyebrow">About us</p>
+  <h1>Brico NB Ltd keeps trade and home improvers supplied.</h1>
+  <p class="lede">We sell tools, plumbing, electrical goods, paint, fasteners, and building materials from our Northbridge and Westford counters. The inventory system replaces the branch notebooks with one shared record.</p>
+</section>
+
+<section class="band grid-2">
+  <article class="card prose">
+    <h2>Why the system exists</h2>
+    <p>Stock used to live in separate books. A quotation at one counter could promise a product that another branch had already sold. Purchases were written up after the fact, so the shelf and the book drifted apart.</p>
+    <p>The system gives every branch the same catalogue, the same customers, and the same stock picture. When a sale is completed, the quantity at that branch comes down and the movement is kept.</p>
+  </article>
+  <article class="card prose">
+    <h2>How a purchase moves</h2>
+    <ol class="steps">
+      <li>Check what is available at each branch.</li>
+      <li>Prepare a quotation from that stock and those prices.</li>
+      <li>Record the purchase, with the customer and the payment.</li>
+      <li>The sale reduces stock and writes the movement.</li>
+    </ol>
+  </article>
+</section>
+
+<section class="band">
+  <div class="section-head">
+    <p class="eyebrow">The record</p>
+    <h2>Names, usernames, and contact details stay clean.</h2>
+  </div>
+  <div class="grid-3">
+    <article class="card">
+      <h3>People</h3>
+      <p>A name uses letters and spaces. Numbers and special characters are refused.</p>
+    </article>
+    <article class="card">
+      <h3>Usernames</h3>
+      <p>No spaces. The first character is a letter, so a username cannot start with a number or a special character.</p>
+    </article>
+    <article class="card">
+      <h3>Contact</h3>
+      <p>Email must be a real address. A phone number must contain 10 to 15 digits. A new password must not be less than 6 characters.</p>
+    </article>
+  </div>
+</section>
+
+{% if branches %}
+<section class="band">
+  <div class="section-head">
+    <p class="eyebrow">Visit</p>
+    <h2>Our counters</h2>
+  </div>
+  <div class="table-wrap">
+    <table class="data">
+      <thead>
+        <tr><th>Code</th><th>Branch</th><th>Address</th><th>Phone</th></tr>
+      </thead>
+      <tbody>
+        {% for branch in branches %}
+          <tr>
+            <td>{{ branch.code }}</td>
+            <td>{{ branch.name }}</td>
+            <td>{{ branch.address }}</td>
+            <td>{{ branch.phone }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% endif %}
+{% endblock %}

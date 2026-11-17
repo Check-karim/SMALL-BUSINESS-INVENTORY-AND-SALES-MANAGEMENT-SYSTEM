@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block pagetitle %}Customers{% endblock %}
+{% block content %}
+<header class="page-head">
+  <div>
+    <p class="eyebrow">People</p>
+    <h1>Customers</h1>
+  </div>
+  <a class="btn btn-primary" href="{{ url_for('commerce.customer_new') }}">Add customer</a>
+</header>
+<form class="filters" method="get">
+  <input type="search" name="q" value="{{ search }}" placeholder="Name, email, or phone" aria-label="Search customers">
+  <button class="btn btn-ghost" type="submit">Search</button>
+</form>
+{% if rows %}
+  <div class="table-wrap">
+    <table class="data">
+      <thead><tr><th>Name</th><th>Email</th><th>Phone</th><th>Address</th><th></th></tr></thead>
+      <tbody>
+        {% for row in rows %}
+          <tr>
+            <td>{{ row.full_name }}</td>
+            <td>{{ row.email }}</td>
+            <td>{{ row.phone }}</td>
+            <td>{{ row.address }}</td>
+            <td><a href="{{ url_for('commerce.customer_edit', customer_id=row.id) }}">Edit</a></td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% else %}
+  <p class="empty">No customers yet.</p>
+{% endif %}
+{% endblock %}

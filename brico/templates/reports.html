@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+{% block pagetitle %}Reports{% endblock %}
+{% block content %}
+<header class="page-head">
+  <div>
+    <p class="eyebrow">Administrator</p>
+    <h1>Business reports</h1>
+  </div>
+  <button class="btn btn-ghost no-print" type="button" data-print>Print</button>
+</header>
+<form class="filters no-print" method="get">
+  <label class="field inline">
+    <span>From</span>
+    <input type="date" name="start" value="{{ start }}" required>
+  </label>
+  <label class="field inline">
+    <span>To</span>
+    <input type="date" name="end" value="{{ end }}" required>
+  </label>
+  <button class="btn btn-ghost" type="submit">Update</button>
+</form>
+{% if error %}<p class="flash flash-error">{{ error }}</p>{% endif %}
+<section class="stat-grid">
+  <article class="stat"><p>Sales</p><strong>{{ data.summary.sales_count }}</strong></article>
+  <article class="stat"><p>Revenue</p><strong>{{ data.summary.revenue|money }}</strong></article>
+  <article class="stat"><p>Units sold</p><strong>{{ data.summary.units }}</strong></article>
+  <article class="stat"><p>Average sale</p><strong>{{ average|money }}</strong></article>
+</section>
+<section class="split">
+  <article class="panel">
+    <h2>Revenue by branch</h2>
+    {% if data.summary.sales_count %}
+      <ul class="bars">
+        {% for row in data.by_branch %}
+          <li>
+            <div class="bar-label"><span>{{ row.name }}</span><span>{{ row.revenue|money }}</span></div>
+            <div class="bar-track"><div class="bar-fill" style="width: {{ ((row.revenue / data.peak) * 100)|round(1) if data.peak else 0 }}%"></div></div>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p class="empty">No sales in this period yet.</p>
+    {% endif %}
+  </article>
+  <article class="panel">
+    <h2>Payment mix</h2>
+    {% if data.payments %}
+      <ul class="stack-list">
+        {% for row in data.payments %}
+          <li>
+            <span>{{ payment_labels.get(row.payment_method, row.payment_method) }} · {{ row.sales_count }}</span>
+            <strong>{{ row.revenue|money }}</strong>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p class="empty">No payments in this period.</p>
+    {% endif %}
+  </article>
+</section>
+<section class="split">
+  <article class="panel">
+    <h2>Top products</h2>
+    {% if data.top_products %}
+      <div class="table-wrap">
+        <table class="data">
+          <thead><tr><th>Product</th><th>Qty</th><th>Revenue</th></tr></thead>
+          <tbody>
+            {% for row in data.top_products %}
+              <tr>
+                <td>{{ row.sku }} · {{ row.name }}</td>
+                <td>{{ row.quantity }}</td>
+                <td>{{ row.revenue|money }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <p class="empty">No product sales in this period.</p>
+    {% endif %}
+  </article>
+  <article class="panel">
+    <h2>Sales by day</h2>
+    {% if data.by_day %}
+      <div class="table-wrap">
+        <table class="data">
+          <thead><tr><th>Day</th><th>Sales</th><th>Revenue</th></tr></thead>
+          <tbody>
+            {% for row in data.by_day %}
+              <tr>
+                <td>{{ row.day|day }}</td>
+                <td>{{ row.sales_count }}</td>
+                <td>{{ row.revenue|money }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <p class="empty">No daily sales in this period.</p>
+    {% endif %}
+  </article>
+</section>
+<article class="panel">
+  <h2>Low stock right now</h2>
+  {% if data.low_rows %}
+    <div class="table-wrap">
+      <table class="data">
+        <thead><tr><th>SKU</th><th>Product</th><th>Branch</th><th>On hand</th><th>Reorder</th></tr></thead>
+        <tbody>
+          {% for row in data.low_rows %}
+            <tr class="is-low">
+              <td>{{ row.sku }}</td>
+              <td>{{ row.name }}</td>
+              <td>{{ row.branch_name }}</td>
+              <td>{{ row.quantity }}</td>
+              <td>{{ row.reorder_level }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <p class="empty">Nothing is at or below its reorder level.</p>
+  {% endif %}
+</article>
+{% endblock %}

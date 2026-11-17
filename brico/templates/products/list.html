@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block pagetitle %}Products{% endblock %}
+{% block content %}
+<header class="page-head">
+  <div>
+    <p class="eyebrow">Catalogue</p>
+    <h1>Products</h1>
+    <p class="lede">Shared across every branch. On-hand is the total still sitting in the yards.</p>
+  </div>
+  {% if me.role == 'admin' %}
+    <a class="btn btn-primary" href="{{ url_for('catalog.product_new') }}">Register product</a>
+  {% endif %}
+</header>
+<form class="filters" method="get">
+  <input type="search" name="q" value="{{ search }}" placeholder="Search name or SKU" aria-label="Search products">
+  <select name="category" aria-label="Category">
+    <option value="">All categories</option>
+    {% for item in categories %}
+      <option value="{{ item }}" {% if category == item %}selected{% endif %}>{{ item }}</option>
+    {% endfor %}
+  </select>
+  {% if me.role == 'admin' %}
+    <label class="check"><input type="checkbox" name="archived" value="1" {% if show_archived %}checked{% endif %}> Show archived</label>
+  {% endif %}
+  <button class="btn btn-ghost" type="submit">Filter</button>
+</form>
+{% if rows %}
+  <div class="table-wrap">
+    <table class="data">
+      <thead>
+        <tr><th>SKU</th><th>Product</th><th>Category</th><th>Price</th><th>On hand</th><th>Status</th>{% if me.role == 'admin' %}<th></th>{% endif %}</tr>
+      </thead>
+      <tbody>
+        {% for row in rows %}
+          <tr>
+            <td>{{ row.sku }}</td>
+            <td>{{ row.name }}</td>
+            <td>{{ row.category }}</td>
+            <td>{{ row.unit_price|money }}</td>
+            <td>{{ row.on_hand }}</td>
+            <td>
+              {% if not row.is_active %}
+                <span class="badge badge-rejected">Archived</span>
+              {% elif row.low_branches %}
+                <span class="badge badge-draft">Low at {{ row.low_branches }} {{ 'branch' if row.low_branches == 1 else 'branches' }}</span>
+              {% else %}
+                <span class="badge badge-accepted">In stock</span>
+              {% endif %}
+            </td>
+            {% if me.role == 'admin' %}
+              <td><a href="{{ url_for('catalog.product_edit', product_id=row.id) }}">Edit</a></td>
+            {% endif %}
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% else %}
+  <p class="empty">No products match that filter.</p>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block pagetitle %}Update stock{% endblock %}
+{% block content %}
+<header class="page-head">
+  <div>
+    <p class="eyebrow">Inventory</p>
+    <h1>Receive or adjust stock</h1>
+    <p class="lede">A delivery adds units. An adjustment can add or remove units when the count was wrong. The movement is kept either way.</p>
+  </div>
+</header>
+<form class="panel form-narrow" method="post">
+  {% include "partials/csrf.html" %}
+  {% if errors.form %}<p class="flash flash-error">{{ errors.form }}</p>{% endif %}
+  <label class="field">
+    <span>Action</span>
+    <select name="mode">
+      <option value="receive" {% if form.mode == 'receive' %}selected{% endif %}>Receive a delivery</option>
+      <option value="adjustment" {% if form.mode == 'adjustment' %}selected{% endif %}>Correct the count</option>
+    </select>
+  </label>
+  <label class="field">
+    <span>Product</span>
+    <select name="product_id" required {% if errors.product_id %}aria-invalid="true"{% endif %}>
+      <option value="">Select a product</option>
+      {% for product in products %}
+        <option value="{{ product.id }}" {% if form.product_id|string == product.id|string %}selected{% endif %}>{{ product.sku }} — {{ product.name }}</option>
+      {% endfor %}
+    </select>
+    {% if errors.product_id %}<strong class="field-error">{{ errors.product_id }}</strong>{% endif %}
+  </label>
+  <label class="field">
+    <span>Branch</span>
+    <select name="branch_id" required {% if errors.branch_id %}aria-invalid="true"{% endif %}>
+      <option value="">Select a branch</option>
+      {% for branch in branches %}
+        <option value="{{ branch.id }}" {% if form.branch_id|string == branch.id|string %}selected{% endif %}>{{ branch.name }}</option>
+      {% endfor %}
+    </select>
+    {% if errors.branch_id %}<strong class="field-error">{{ errors.branch_id }}</strong>{% endif %}
+  </label>
+  <label class="field">
+    <span>Quantity</span>
+    <input type="number" name="quantity" step="1" value="{{ form.quantity }}" required {% if errors.quantity %}aria-invalid="true"{% endif %}>
+    <small class="hint">For a correction, use a negative number to remove units.</small>
+    {% if errors.quantity %}<strong class="field-error">{{ errors.quantity }}</strong>{% endif %}
+  </label>
+  <label class="field">
+    <span>Note</span>
+    <input name="note" value="{{ form.note }}" maxlength="255" {% if errors.note %}aria-invalid="true"{% endif %}>
+    <small class="hint">Required when you correct a count.</small>
+    {% if errors.note %}<strong class="field-error">{{ errors.note }}</strong>{% endif %}
+  </label>
+  <div class="form-actions">
+    <button class="btn btn-primary" type="submit">Update stock</button>
+    <a href="{{ url_for('catalog.inventory_list') }}">Cancel</a>
+  </div>
+</form>
+{% endblock %}

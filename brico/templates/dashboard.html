@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block pagetitle %}Dashboard{% endblock %}
+{% block content %}
+<header class="page-head">
+  <div>
+    <p class="eyebrow">{{ greeting }}</p>
+    <h1>{{ me.full_name }}</h1>
+    <p class="lede">Company-wide picture for every branch. Sales today update the stock at the counter that recorded them.</p>
+  </div>
+  <div class="page-actions">
+    <a class="btn btn-primary" href="{{ url_for('commerce.sale_new') }}">Record a sale</a>
+    <a class="btn btn-ghost" href="{{ url_for('commerce.quotation_new') }}">New quotation</a>
+  </div>
+</header>
+<section class="stat-grid">
+  <article class="stat"><p>Products</p><strong>{{ snap.product_count }}</strong></article>
+  <article class="stat"><p>Branches</p><strong>{{ snap.branch_count }}</strong></article>
+  <article class="stat"><p>Sales today</p><strong>{{ snap.today_count }}</strong><span>{{ snap.today_revenue|money }}</span></article>
+  <article class="stat {{ 'stat-alert' if snap.low_count else '' }}"><p>Low stock lines</p><strong>{{ snap.low_count }}</strong><span>{{ snap.open_quotes }} open quotations</span></article>
+</section>
+<section class="split">
+  <article class="panel">
+    <div class="panel-head">
+      <h2>Recent sales</h2>
+      <a href="{{ url_for('commerce.sale_list') }}">All sales</a>
+    </div>
+    {% if snap.recent_sales %}
+      <div class="table-wrap">
+        <table class="data">
+          <thead><tr><th>Sale</th><th>Customer</th><th>Branch</th><th>Total</th></tr></thead>
+          <tbody>
+            {% for sale in snap.recent_sales %}
+              <tr>
+                <td><a href="{{ url_for('commerce.sale_detail', sale_id=sale.id) }}">{{ sale.sale_no }}</a></td>
+                <td>{{ sale.customer_name }}</td>
+                <td>{{ sale.branch_name }}</td>
+                <td>{{ sale.total|money }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <p class="empty">No sales yet. The first receipt will show up here.</p>
+    {% endif %}
+  </article>
+  <article class="panel">
+    <div class="panel-head">
+      <h2>Needs a reorder</h2>
+      <a href="{{ url_for('catalog.inventory_list', low=1) }}">Full list</a>
+    </div>
+    {% if snap.low_rows %}
+      <ul class="stack-list">
+        {% for row in snap.low_rows %}
+          <li>
+            <span>{{ row.name }} <small>{{ row.branch_name }}</small></span>
+            <strong>{{ row.quantity }} / {{ row.reorder_level }}</strong>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p class="empty">Every active line is above its reorder level.</p>
+    {% endif %}
+  </article>
+</section>
+{% endblock %}

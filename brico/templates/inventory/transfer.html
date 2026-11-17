@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block pagetitle %}Transfer stock{% endblock %}
+{% block content %}
+<header class="page-head">
+  <div>
+    <p class="eyebrow">Inventory</p>
+    <h1>Transfer between branches</h1>
+  </div>
+</header>
+<form class="panel form-narrow" method="post">
+  {% include "partials/csrf.html" %}
+  {% if errors.form %}<p class="flash flash-error">{{ errors.form }}</p>{% endif %}
+  <label class="field">
+    <span>Product</span>
+    <select name="product_id" required>
+      <option value="">Select a product</option>
+      {% for product in products %}
+        <option value="{{ product.id }}" {% if form.product_id|string == product.id|string %}selected{% endif %}>{{ product.sku }} — {{ product.name }}</option>
+      {% endfor %}
+    </select>
+    {% if errors.product_id %}<strong class="field-error">{{ errors.product_id }}</strong>{% endif %}
+  </label>
+  <div class="form-grid">
+    <label class="field">
+      <span>From</span>
+      <select name="source_id" required>
+        <option value="">Source branch</option>
+        {% for branch in branches %}
+          <option value="{{ branch.id }}" {% if form.source_id|string == branch.id|string %}selected{% endif %}>{{ branch.name }}</option>
+        {% endfor %}
+      </select>
+      {% if errors.source_id %}<strong class="field-error">{{ errors.source_id }}</strong>{% endif %}
+    </label>
+    <label class="field">
+      <span>To</span>
+      <select name="dest_id" required>
+        <option value="">Destination branch</option>
+        {% for branch in branches %}
+          <option value="{{ branch.id }}" {% if form.dest_id|string == branch.id|string %}selected{% endif %}>{{ branch.name }}</option>
+        {% endfor %}
+      </select>
+      {% if errors.dest_id %}<strong class="field-error">{{ errors.dest_id }}</strong>{% endif %}
+    </label>
+  </div>
+  <label class="field">
+    <span>Quantity</span>
+    <input type="number" name="quantity" min="1" step="1" value="{{ form.quantity }}" required>
+    {% if errors.quantity %}<strong class="field-error">{{ errors.quantity }}</strong>{% endif %}
+  </label>
+  <label class="field">
+    <span>Note</span>
+    <input name="note" value="{{ form.note }}" maxlength="255">
+    {% if errors.note %}<strong class="field-error">{{ errors.note }}</strong>{% endif %}
+  </label>
+  <div class="form-actions">
+    <button class="btn btn-primary" type="submit">Transfer</button>
+    <a href="{{ url_for('catalog.inventory_list') }}">Cancel</a>
+  </div>
+</form>
+{% endblock %}

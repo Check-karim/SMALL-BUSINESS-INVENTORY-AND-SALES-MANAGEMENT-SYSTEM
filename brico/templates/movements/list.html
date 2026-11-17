@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block pagetitle %}Movements{% endblock %}
+{% block content %}
+<header class="page-head">
+  <div>
+    <p class="eyebrow">Audit</p>
+    <h1>Stock movements</h1>
+    <p class="lede">Every receipt, sale, correction, and transfer, with the balance left afterwards.</p>
+  </div>
+</header>
+<form class="filters" method="get">
+  <input type="search" name="q" value="{{ search }}" placeholder="Product, SKU, or reference" aria-label="Search movements">
+  <select name="branch_id" aria-label="Branch">
+    <option value="">All branches</option>
+    {% for branch in branches %}
+      <option value="{{ branch.id }}" {% if branch_id == branch.id %}selected{% endif %}>{{ branch.name }}</option>
+    {% endfor %}
+  </select>
+  <select name="type" aria-label="Movement type">
+    <option value="">All types</option>
+    {% for key, label in movement_types.items() %}
+      <option value="{{ key }}" {% if movement_type == key %}selected{% endif %}>{{ label }}</option>
+    {% endfor %}
+  </select>
+  <button class="btn btn-ghost" type="submit">Filter</button>
+</form>
+{% if rows %}
+  <div class="table-wrap">
+    <table class="data">
+      <thead>
+        <tr><th>When</th><th>Product</th><th>Branch</th><th>Type</th><th>Change</th><th>Balance</th><th>By</th><th>Note</th></tr>
+      </thead>
+      <tbody>
+        {% for row in rows %}
+          <tr>
+            <td>{{ row.created_at|when }}</td>
+            <td>{{ row.sku }} · {{ row.product_name }}</td>
+            <td>{{ row.branch_name }}</td>
+            <td>{{ movement_labels.get(row.movement_type, row.movement_type) }}</td>
+            <td class="{{ 'qty-pos' if row.quantity > 0 else 'qty-neg' }}">{{ row.quantity|signed }}</td>
+            <td>{{ row.balance_after }}</td>
+            <td>{{ row.staff_name }}</td>
+            <td>{{ row.note }}{% if row.reference_no %} · {{ row.reference_no }}{% endif %}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% else %}
+  <p class="empty">No movements match that filter.</p>
+{% endif %}
+{% endblock %}

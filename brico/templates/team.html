@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block pagetitle %}Team{% endblock %}
+{% block content %}
+<header class="page-head">
+  <div>
+    <p class="eyebrow">Company</p>
+    <h1>Team</h1>
+    <p class="lede">The administrator account is preloaded as admin / admin. Staff register themselves. A password they choose must not be less than 6 characters.</p>
+  </div>
+</header>
+<div class="table-wrap">
+  <table class="data">
+    <thead><tr><th>Name</th><th>Username</th><th>Email</th><th>Phone</th><th>Role</th><th>Branch</th></tr></thead>
+    <tbody>
+      {% for row in rows %}
+        <tr>
+          <td>{{ row.full_name }}</td>
+          <td>{{ row.username }}</td>
+          <td>{{ row.email }}</td>
+          <td>{{ row.phone }}</td>
+          <td><span class="badge badge-{{ row.role }}">{{ row.role|capitalize }}</span></td>
+          <td>{{ row.branch_name or "All branches" }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

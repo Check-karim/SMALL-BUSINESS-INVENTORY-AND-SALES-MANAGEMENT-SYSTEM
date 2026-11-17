@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block pagetitle %}Branches{% endblock %}
+{% block content %}
+<header class="page-head">
+  <div>
+    <p class="eyebrow">Company</p>
+    <h1>Branches</h1>
+  </div>
+  <a class="btn btn-primary" href="{{ url_for('manage.branch_new') }}">Add branch</a>
+</header>
+<div class="table-wrap">
+  <table class="data">
+    <thead><tr><th>Code</th><th>Name</th><th>Address</th><th>Phone</th><th></th></tr></thead>
+    <tbody>
+      {% for row in rows %}
+        <tr>
+          <td>{{ row.code }}</td>
+          <td>{{ row.name }}</td>
+          <td>{{ row.address }}</td>
+          <td>{{ row.phone }}</td>
+          <td><a href="{{ url_for('manage.branch_edit', branch_id=row.id) }}">Edit</a></td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

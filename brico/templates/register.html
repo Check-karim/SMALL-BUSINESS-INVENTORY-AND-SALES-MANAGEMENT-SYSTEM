@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block pagetitle %}Register{% endblock %}
+{% block content %}
+<section class="auth-layout">
+  <aside class="auth-aside">
+    <p class="eyebrow">Sales staff</p>
+    <h1>Open a counter account.</h1>
+    <ul class="rules">
+      <li>Name: letters and spaces only.</li>
+      <li>Username: no spaces, and it must start with a letter.</li>
+      <li>Email: a valid address.</li>
+      <li>Phone: 10 to 15 digits.</li>
+      <li>Password: not less than 6 characters.</li>
+    </ul>
+  </aside>
+  <form class="panel" method="post" novalidate>
+    {% include "partials/csrf.html" %}
+    <h2>Register</h2>
+    {% if errors.form %}<p class="flash flash-error">{{ errors.form }}</p>{% endif %}
+    <div class="form-grid">
+      <label class="field">
+        <span>Full name</span>
+        <input name="full_name" value="{{ form.full_name }}" autocomplete="name" required maxlength="80" {% if errors.full_name %}aria-invalid="true"{% endif %}>
+        <small class="hint">Letters and spaces only.</small>
+        {% if errors.full_name %}<strong class="field-error">{{ errors.full_name }}</strong>{% endif %}
+      </label>
+      <label class="field">
+        <span>Username</span>
+        <input name="username" value="{{ form.username }}" autocomplete="username" required maxlength="30" pattern="[A-Za-z][A-Za-z0-9_]{2,29}" title="Start with a letter. Then use letters, numbers, or underscores. No spaces." {% if errors.username %}aria-invalid="true"{% endif %}>
+        <small class="hint">Start with a letter. No spaces.</small>
+        {% if errors.username %}<strong class="field-error">{{ errors.username }}</strong>{% endif %}
+      </label>
+      <label class="field">
+        <span>Email</span>
+        <input type="email" name="email" value="{{ form.email }}" autocomplete="email" required maxlength="120" {% if errors.email %}aria-invalid="true"{% endif %}>
+        {% if errors.email %}<strong class="field-error">{{ errors.email }}</strong>{% endif %}
+      </label>
+      <label class="field">
+        <span>Phone</span>
+        <input type="tel" name="phone" value="{{ form.phone }}" autocomplete="tel" required maxlength="20" {% if errors.phone %}aria-invalid="true"{% endif %}>
+        <small class="hint">10 to 15 digits. A leading + is allowed.</small>
+        {% if errors.phone %}<strong class="field-error">{{ errors.phone }}</strong>{% endif %}
+      </label>
+      <label class="field">
+        <span>Branch</span>
+        <select name="branch_id" required {% if errors.branch_id %}aria-invalid="true"{% endif %}>
+          <option value="">Choose a branch</option>
+          {% for branch in branches %}
+            <option value="{{ branch.id }}" {% if form.branch_id|string == branch.id|string %}selected{% endif %}>{{ branch.name }}</option>
+          {% endfor %}
+        </select>
+        {% if errors.branch_id %}<strong class="field-error">{{ errors.branch_id }}</strong>{% endif %}
+      </label>
+      <label class="field">
+        <span>Password</span>
+        <input type="password" name="password" data-password autocomplete="new-password" required minlength="6" maxlength="128" {% if errors.password %}aria-invalid="true"{% endif %}>
+        <small class="hint" data-password-meter>At least 6 characters.</small>
+        {% if errors.password %}<strong class="field-error">{{ errors.password }}</strong>{% endif %}
+      </label>
+      <label class="field">
+        <span>Confirm password</span>
+        <input type="password" name="confirm" autocomplete="new-password" required minlength="6" maxlength="128">
+      </label>
+    </div>
+    <div class="form-actions">
+      <button class="btn btn-primary" type="submit">Create account</button>
+      <a href="{{ url_for('auth.login') }}">I already have an account</a>
+    </div>
+  </form>
+</section>
+{% endblock %}

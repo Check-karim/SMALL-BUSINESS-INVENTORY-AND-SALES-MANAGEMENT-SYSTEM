@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+{% block pagetitle %}{{ 'New quotation' if mode == 'quote' else 'Record a sale' }}{% endblock %}
+{% block content %}
+<header class="page-head">
+  <div>
+    <p class="eyebrow">{{ 'Quotation' if mode == 'quote' else 'Sale' }}</p>
+    <h1>{{ 'Prepare a quotation' if mode == 'quote' else 'Record a purchase' }}</h1>
+    <p class="lede">Prices come from the catalogue. The branch must have enough stock for every line.</p>
+  </div>
+</header>
+{% if not customers or not catalog %}
+  <p class="empty">
+    {% if not customers %}Add a customer before writing a {{ 'quotation' if mode == 'quote' else 'sale' }}. <a href="{{ url_for('commerce.customer_new') }}">Add customer</a>{% endif %}
+    {% if not catalog %} The catalogue has no active products yet.{% endif %}
+  </p>
+{% else %}
+  <form class="panel" method="post" data-lines>
+    {% include "partials/csrf.html" %}
+    {% if errors %}
+      <div class="flash flash-error">
+        {% for error in errors %}<p>{{ error }}</p>{% endfor %}
+      </div>
+    {% endif %}
+    <div class="form-grid">
+      <label class="field">
+        <span>Customer</span>
+        <select name="customer_id" required>
+          <option value="">Select a customer</option>
+          {% for customer in customers %}
+            <option value="{{ customer.id }}" {% if form.customer_id|string == customer.id|string %}selected{% endif %}>{{ customer.full_name }}</option>
+          {% endfor %}
+        </select>
+      </label>
+      {% if locked_branch %}
+        <label class="field">
+          <span>Branch</span>
+          <input value="{{ me.branch_name }}" disabled>
+          <input type="hidden" name="branch_id" value="{{ form.branch_id }}">
+        </label>
+      {% else %}
+        <label class="field">
+          <span>Branch</span>
+          <select name="branch_id" required>
+            {% for branch in branches %}
+              <option value="{{ branch.id }}" {% if form.branch_id|string == branch.id|string %}selected{% endif %}>{{ branch.name }}</option>
+            {% endfor %}
+          </select>
+        </label>
+      {% endif %}
+      {% if mode == 'sale' %}
+        <label class="field">
+          <span>Payment</span>
+          <select name="payment_method">
+            {% for key, label in payment_methods %}
+              <option value="{{ key }}" {% if form.payment_method == key %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+          </select>
+        </label>
+      {% else %}
+        <label class="field">
+          <span>Notes</span>
+          <input name="notes" value="{{ form.notes }}" maxlength="255">
+        </label>
+      {% endif %}
+    </div>
+    <div class="table-wrap">
+      <table class="data lines">
+        <thead>
+          <tr><th>Product</th><th>Available</th><th>Qty</th><th>Price</th><th>Line</th><th></th></tr>
+        </thead>
+        <tbody data-line-body>
+          {% for line in selected %}
+            <tr data-line>
+              <td>
+                <select name="product_id">
+                  <option value="">Select a product</option>
+                  {% for product in catalog %}
+                    <option value="{{ product.id }}" {% if line.product_id|string == product.id|string %}selected{% endif %}>{{ product.sku }} — {{ product.name }}</option>
+                  {% endfor %}
+                </select>
+              </td>
+              <td data-avail>—</td>
+              <td><input class="qty" type="number" name="quantity" min="1" step="1" value="{{ line.quantity }}"></td>
+              <td data-price>—</td>
+              <td data-line-total>—</td>
+              <td><button class="btn btn-small" type="button" data-remove-line>Remove</button></td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <div class="lines-foot">
+      <button class="btn btn-ghost" type="button" data-add-line>Add product</button>
+      <p>Total <strong data-grand>$0.00</strong></p>
+    </div>
+    <div class="form-actions">
+      <button class="btn btn-primary" type="submit">{{ 'Save quotation' if mode == 'quote' else 'Complete sale' }}</button>
+      <a href="{{ url_for('commerce.quotation_list' if mode == 'quote' else 'commerce.sale_list') }}">Cancel</a>
+    </div>
+  </form>
+  <script id="catalog-data" type="application/json">{{ catalog|tojson }}</script>
+{% endif %}
+{% endblock %}

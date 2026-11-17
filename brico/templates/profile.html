@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block pagetitle %}Profile{% endblock %}
+{% block content %}
+<header class="page-head">
+  <div>
+    <p class="eyebrow">Account</p>
+    <h1>{{ me.full_name }}</h1>
+  </div>
+</header>
+<section class="split">
+  <article class="panel">
+    <h2>Details</h2>
+    <dl class="facts">
+      <div><dt>Username</dt><dd>{{ me.username }}</dd></div>
+      <div><dt>Role</dt><dd>{{ me.role|capitalize }}</dd></div>
+      <div><dt>Branch</dt><dd>{{ me.branch_name }}</dd></div>
+    </dl>
+  </article>
+  <form class="panel" method="post">
+    {% include "partials/csrf.html" %}
+    <h2>Change password</h2>
+    <p class="hint">A new password must not be less than 6 characters.</p>
+    <label class="field">
+      <span>Current password</span>
+      <input type="password" name="current_password" autocomplete="current-password" required {% if errors.current_password %}aria-invalid="true"{% endif %}>
+      {% if errors.current_password %}<strong class="field-error">{{ errors.current_password }}</strong>{% endif %}
+    </label>
+    <label class="field">
+      <span>New password</span>
+      <input type="password" name="new_password" data-password autocomplete="new-password" required minlength="6" maxlength="128" {% if errors.new_password %}aria-invalid="true"{% endif %}>
+      <small class="hint" data-password-meter>At least 6 characters.</small>
+      {% if errors.new_password %}<strong class="field-error">{{ errors.new_password }}</strong>{% endif %}
+    </label>
+    <label class="field">
+      <span>Confirm new password</span>
+      <input type="password" name="confirm" autocomplete="new-password" required minlength="6" maxlength="128" {% if errors.confirm %}aria-invalid="true"{% endif %}>
+      {% if errors.confirm %}<strong class="field-error">{{ errors.confirm }}</strong>{% endif %}
+    </label>
+    <button class="btn btn-primary" type="submit">Update password</button>
+  </form>
+</section>
+{% endblock %}

@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block pagetitle %}Log in{% endblock %}
+{% block content %}
+<section class="auth-layout">
+  <aside class="auth-aside">
+    <p class="eyebrow">Staff entrance</p>
+    <h1>Sign in to the counter.</h1>
+    <p>Administrators and sales staff use the same door. The account decides what you can change.</p>
+    <div class="credential">
+      <p class="ticket-kicker">Preloaded administrator</p>
+      <p><span>Username</span> admin</p>
+      <p><span>Password</span> admin</p>
+      <p class="credential-note">Any password you choose later must not be less than 6 characters. The preloaded administrator password stays as issued.</p>
+    </div>
+  </aside>
+  <form class="panel" method="post">
+    {% include "partials/csrf.html" %}
+    <h2>Log in</h2>
+    {% if errors.form %}<p class="flash flash-error">{{ errors.form }}</p>{% endif %}
+    <label class="field">
+      <span>Username</span>
+      <input name="username" value="{{ form.username }}" autocomplete="username" required maxlength="30">
+    </label>
+    <label class="field">
+      <span>Password</span>
+      <input type="password" name="password" autocomplete="current-password" required>
+    </label>
+    <div class="form-actions">
+      <button class="btn btn-primary" type="submit">Sign in</button>
+      <a href="{{ url_for('auth.register') }}">Create a staff account</a>
+    </div>
+  </form>
+</section>
+{% endblock %}

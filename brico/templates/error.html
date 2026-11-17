@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block pagetitle %}{{ title }}{% endblock %}
+{% block content %}
+<section class="page">
+  <p class="eyebrow">{{ code }}</p>
+  <h1>{{ title }}</h1>
+  <p class="lede">{{ message }}</p>
+  <a class="btn btn-primary" href="{{ url_for('manage.dashboard_page') if me else url_for('public.home') }}">Continue</a>
+</section>
+{% endblock %}
